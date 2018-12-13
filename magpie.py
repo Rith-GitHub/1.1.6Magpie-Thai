@@ -144,7 +144,7 @@ database = {
             "ratings": " recieved an overall rating of 10/10.",  #should be the same as above
             "cost":" costs $59.99 in the United States.",      #what is cost of game
             "price":" costs $59.99 in the United States.",     #same as above
-            "DESCRIPTION":""#should only trigger if "what" is found in phrase
+            "DESCRIPTION":" is a mario game made for the switch."#should only trigger if "what" is found in phrase
                             #   and nothing else
         },
         "where": {
@@ -160,10 +160,24 @@ database = {
         }
     },
 }
-
+database["Mario Odyssey"] = database["Super Mario Odyssey"]
+'''
+'''
 def getGreeting():
-    return "Hello, let's talk."
+    statement = "Hello, let's talk. \n"
+    statement += "I specialize in games. \nAsk me about "
+    counter = 0
+    for game in database:
+        if (counter == len(database)-1):
+            statement += "or "+ game + "."
+            break
+        else:
+            statement += game + ", "
+            counter += 1;
+    return statement
 
+'''
+'''
 def findKeyWord(statement, goal, startPos = 0):
     phrase = statement.strip()
     psn = phrase.lower().find(goal.lower(), startPos)
@@ -180,6 +194,8 @@ def findKeyWord(statement, goal, startPos = 0):
         psn = phrase.find(goal.lower(), psn + 1)
     return -1
 
+'''
+'''
 def transformIWantToStatement(statement):
     statement = statement.strip()
     lastChar = statement[len(statement) - 1]
@@ -189,6 +205,8 @@ def transformIWantToStatement(statement):
     restOfStatement = "What would it mean to " + statement[psn + 9:].strip() +"?"
     return restOfStatement
 
+'''
+'''
 def transformYouMeStatement(statement):
     statement = statement.strip()
     lastChar = statement[len(statement) - 1]
@@ -200,6 +218,8 @@ def transformYouMeStatement(statement):
                       statement[psnOfYou+ 3: psnOfMe].strip() + " you?"
     return restOfStatement
 
+'''
+'''
 def getRandomResponse():
     NUMBER_OF_RESPONSES = 10
     r = random.random()
@@ -227,11 +247,18 @@ def getRandomResponse():
         response = "You're ruining the illusion of me being an actual person."
     return response
 
+
 def getResponse(statement):
     response = ""
     statement = statement.lower().strip()
     if (findKeyWord(statement, "no") >= 0):
         response = "Why so negative?"
+    elif (findKeyWord(statement, "hi") >=0 or \
+             findKeyWord(statement, "hello") >=0 or \
+             findKeyWord(statement, "hey") >=0):
+        response = "Hello!"
+    elif (findKeyWord(statement, "how are you") >=0):
+        response = "I'm okay"
     elif (findKeyWord(statement, "mother") >=0 or \
              findKeyWord(statement, "father") >=0 or \
              findKeyWord(statement, "sister") >=0 or \
@@ -268,6 +295,10 @@ def getResponse(statement):
                     else:
                         if (question == "what" and findKeyWord(response, game) < 0):
                             response = game + database[game]["what"]["DESCRIPTION"]
+            else:
+                if (findKeyWord(response, game) < 0):
+                    response = game + database[game]["what"]["DESCRIPTION"]
+                    
     return response
 
 statement = raw_input(getGreeting() + "\n")
