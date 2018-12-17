@@ -161,148 +161,148 @@ database = {
     },
 }
 database["Mario Odyssey"] = database["Super Mario Odyssey"]
-'''
-'''
-def getGreeting():
-    statement = "Hello, let's talk. \n"
-    statement += "I specialize in games. \nAsk me about "
-    counter = 0
-    for game in database:
-        if (counter == len(database)-1):
-            statement += "or "+ game + "."
-            break
-        else:
-            statement += game + ", "
-            counter += 1;
-    return statement
 
-'''
-'''
-def findKeyWord(statement, goal, startPos = 0):
-    phrase = statement.strip()
-    psn = phrase.lower().find(goal.lower(), startPos)
-    while(psn >= 0):
-        before = " "
-        after = " "
-        if (psn > 0):
-            before = phrase[psn-1:psn].lower()
-        if (psn + len(goal) < len(phrase)):
-            after = phrase[psn + len(goal): psn + len(goal) + 1]
-        if ("abcdefghijklmnopqrstuvwxyz".find(before.lower()) < 0 or \
-            "abcdefghijklmnopqrstuvwxyz".find(after.lower()) < 0):
-            return psn
-        psn = phrase.find(goal.lower(), psn + 1)
-    return -1
-
-'''
-'''
-def transformIWantToStatement(statement):
-    statement = statement.strip()
-    lastChar = statement[len(statement) - 1]
-    if (lastChar == "."):
-        statement = statement[:len(statement)-1]
-    psn = findKeyWord(statement, "I want to", 0)
-    restOfStatement = "What would it mean to " + statement[psn + 9:].strip() +"?"
-    return restOfStatement
-
-'''
-'''
-def transformYouMeStatement(statement):
-    statement = statement.strip()
-    lastChar = statement[len(statement) - 1]
-    if (lastChar == "."):
-        statement = statement[:len(statement)-1]
-    psnOfYou = findKeyWord(statement, "you", 0)
-    psnOfMe = findKeyWord(statement, "me", psnOfYou + 3)
-    restOfStatement = "What makes you think I " + \
-                      statement[psnOfYou+ 3: psnOfMe].strip() + " you?"
-    return restOfStatement
-
-'''
-'''
-def getRandomResponse():
-    NUMBER_OF_RESPONSES = 10
-    r = random.random()
-    whichResponse = int(r * NUMBER_OF_RESPONSES)
-    response = ""
-    if (whichResponse == 0):
-        response = "Interesting, tell me more."
-    elif (whichResponse == 1):
-        response = "Hmmmmmm."
-    elif (whichResponse == 2):
-        response = "Do you really think so?"
-    elif (whichResponse == 3):
-        response = "You don't say."
-    elif (whichResponse == 4):
-        response = "I see."
-    elif (whichResponse == 5):
-        response = "Very interesting."
-    elif (whichResponse == 6):
-        response = "To be honest I don't understand"
-    elif (whichResponse == 7):
-        response = "I actually have no reply."
-    elif (whichResponse == 8):
-        response = "I don't understand"
-    elif (whichResponse == 9):
-        response = "You're ruining the illusion of me being an actual person."
-    return response
-
-
-def getResponse(statement):
-    response = ""
-    statement = statement.lower().strip()
-    if (findKeyWord(statement, "no") >= 0):
-        response = "Why so negative?"
-    elif (findKeyWord(statement, "hi") >=0 or \
-             findKeyWord(statement, "hello") >=0 or \
-             findKeyWord(statement, "hey") >=0):
-        response = "Hello!"
-    elif (findKeyWord(statement, "how are you") >=0):
-        response = "I'm okay"
-    elif (findKeyWord(statement, "mother") >=0 or \
-             findKeyWord(statement, "father") >=0 or \
-             findKeyWord(statement, "sister") >=0 or \
-             findKeyWord(statement, "brother")>=0):
-        response = "Tell me more about your family."
-    elif (findKeyWord(statement, "dog")>=0 or findKeyWord(statement, "cat")>=0):
-        response = "Tell me more about your pets."
-    elif (findKeyWord(statement,"mr.") >=0 or \
-          findKeyWord(statement,"mister") >=0):
-        response = "He sounds like a nice teacher."
-    elif (findKeyWord(statement, "mrs.")>=0 or \
-          findKeyWord(statement, "ms.")>=0 or \
-          findKeyWord(statement, "miss")>=0):
-        response = "She seems like a good teacher."
-    elif (statement == ""):
-        response = "Please say something."
-    elif (findKeyWord(statement, "I want to", 0) >= 0):
-        response = transformIWantToStatement(statement)
-    else:
-        psn = findKeyWord(statement, "you", 0)
-        if (psn >= 0 and findKeyWord(statement, "me", psn) >= 0):
-            response = transformYouMeStatement(statement)
-        else:
-            response = getRandomResponse()
-            
-    gameDescriptionFlag = False
-    for game in database:
-        if (findKeyWord(statement, game.lower()) >= 0):
-            for question in database[game]:
-                if (findKeyWord(statement, question) >= 0):
-                    for phrase in database[game][question]:
-                        if (findKeyWord(statement, phrase) >= 0):
-                            response = game + database[game][question][phrase]
-                    else:
-                        if (question == "what" and findKeyWord(response, game) < 0):
-                            response = game + database[game]["what"]["DESCRIPTION"]
+class chatbot:
+    def __init__(self):
+        return
+    '''
+    '''
+    def getGreeting(self):
+        statement = "Hello, let's talk. \n"
+        statement += "I specialize in games. \nAsk me about "
+        counter = 0
+        for game in database:
+            if (counter == len(database)-1):
+                statement += "or "+ game + "."
+                break
             else:
-                if (findKeyWord(response, game) < 0):
-                    response = game + database[game]["what"]["DESCRIPTION"]
-                    
-    return response
-
-statement = raw_input(getGreeting() + "\n")
-
-while (statement.lower() != "bye"):
-    print(getResponse(statement))
-    statement = raw_input("")
+                statement += game + ", "
+                counter += 1;
+        return statement
+    
+    '''
+    '''
+    def findKeyWord(self, statement, goal, startPos = 0):
+        phrase = statement.strip()
+        psn = phrase.lower().find(goal.lower(), startPos)
+        while(psn >= 0):
+            
+            before = " "
+            after = " "
+            if (psn > 0):
+                before = phrase[psn-1:psn].lower()
+            if (psn + len(goal) < len(phrase)):
+                after = phrase[psn + len(goal): psn + len(goal) + 1]
+            if ("abcdefghijklmnopqrstuvwxyz".find(before.lower()) < 0 and \
+                "abcdefghijklmnopqrstuvwxyz".find(after.lower()) < 0):
+                return psn
+            psn = phrase.find(goal.lower(), psn + 1)
+        return -1
+    
+    '''
+    '''
+    def transformIWantToStatement(self, statement):
+        statement = statement.strip()
+        lastChar = statement[len(statement) - 1]
+        if (lastChar == "."):
+            statement = statement[:len(statement)-1]
+        psn = self.findKeyWord(statement, "I want to", 0)
+        restOfStatement = "What would it mean to " + statement[psn + 9:].strip() +"?"
+        return restOfStatement
+    
+    '''
+    '''
+    def transformYouMeStatement(self, statement):
+        statement = statement.strip()
+        lastChar = statement[len(statement) - 1]
+        if (lastChar == "."):
+            statement = statement[:len(statement)-1]
+        psnOfYou = self.findKeyWord(statement, "you", 0)
+        psnOfMe = self.findKeyWord(statement, "me", psnOfYou + 3)
+        restOfStatement = "What makes you think I " + \
+                          statement[psnOfYou+ 3: psnOfMe].strip() + " you?"
+        return restOfStatement
+    
+    '''
+    '''
+    def getRandomResponse(self):
+        NUMBER_OF_RESPONSES = 10
+        r = random.random()
+        whichResponse = int(r * NUMBER_OF_RESPONSES)
+        response = ""
+        if (whichResponse == 0):
+            response = "Interesting, tell me more."
+        elif (whichResponse == 1):
+            response = "Hmmmmmm."
+        elif (whichResponse == 2):
+            response = "Do you really think so?"
+        elif (whichResponse == 3):
+            response = "You don't say."
+        elif (whichResponse == 4):
+            response = "I see."
+        elif (whichResponse == 5):
+            response = "Very interesting."
+        elif (whichResponse == 6):
+            response = "To be honest I don't understand"
+        elif (whichResponse == 7):
+            response = "I actually have no reply."
+        elif (whichResponse == 8):
+            response = "I don't understand"
+        elif (whichResponse == 9):
+            response = "You're ruining the illusion of me being an actual person."
+        return response
+    
+    '''
+    '''
+    def getResponse(self, statement):
+        response = ""
+        statement = statement.lower().strip()
+        if (self.findKeyWord(statement, "no") >= 0):
+            response = "Why so negative?"
+        elif (self.findKeyWord(statement, "hi") >=0 or \
+                 self.findKeyWord(statement, "hello") >=0 or \
+                 self.findKeyWord(statement, "hey") >=0):
+            response = "Hello!"
+        elif (self.findKeyWord(statement, "how are you") >=0):
+            response = "I'm okay"
+        elif (self.findKeyWord(statement, "mother") >=0 or \
+                 self.findKeyWord(statement, "father") >=0 or \
+                 self.findKeyWord(statement, "sister") >=0 or \
+                 self.findKeyWord(statement, "brother")>=0):
+            response = "Tell me more about your family."
+        elif (self.findKeyWord(statement, "dog")>=0 or \
+            self.findKeyWord(statement, "cat")>=0):
+            response = "Tell me more about your pets."
+        elif (self.findKeyWord(statement,"mr.") >=0 or \
+              self.findKeyWord(statement,"mister") >=0):
+            response = "He sounds like a nice teacher."
+        elif (self.findKeyWord(statement, "mrs.")>=0 or \
+              self.findKeyWord(statement, "ms.")>=0 or \
+              self.findKeyWord(statement, "miss")>=0):
+            response = "She seems like a good teacher."
+        elif (statement == ""):
+            response = "Please say something."
+        elif (self.findKeyWord(statement, "I want to", 0) >= 0):
+            response = self.transformIWantToStatement(statement)
+        else:
+            psn = self.findKeyWord(statement, "you", 0)
+            if (psn >= 0 and self.findKeyWord(statement, "me", psn) >= 0):
+                response = self.transformYouMeStatement(statement)
+            else:
+                response = self.getRandomResponse()
+                
+        for game in database:
+            if (self.findKeyWord(statement, game.lower()) >= 0):
+                for question in database[game]:
+                    if (self.findKeyWord(statement, question) >= 0):
+                        for phrase in database[game][question]:
+                            if (self.findKeyWord(statement, phrase) >= 0):
+                                response = game + database[game][question][phrase]
+                        else:
+                            if (question == "what" and self.findKeyWord(response, game) < 0):
+                                response = game + database[game]["what"]["DESCRIPTION"]
+                else:
+                    if (self.findKeyWord(response, game) < 0):
+                        response = game + database[game]["what"]["DESCRIPTION"]
+                        
+        return response
