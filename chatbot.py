@@ -164,20 +164,27 @@ database["Mario Odyssey"] = database["Super Mario Odyssey"]
 
 class chatbot:
     def __init__(self):
-        return
+        self.topic = ""
     '''
     '''
     def getGreeting(self):
         statement = "Hello, let's talk. \n"
         statement += "I specialize in games. \nAsk me about "
         counter = 0
+        temp = {}
         for game in database:
-            if (counter == len(database)-1):
+            if (counter == len(database)-1):   #if last element
                 statement += "or "+ game + "."
                 break
             else:
-                statement += game + ", "
-                counter += 1;
+                for other in temp:
+                    if (temp[other] == database[game]):
+                        counter += 1;
+                        break
+                else:
+                    temp[game] = database[game]
+                    statement += game + ", "
+                    counter += 1;
         return statement
     
     '''
@@ -292,17 +299,30 @@ class chatbot:
                 response = self.getRandomResponse()
                 
         for game in database:
-            if (self.findKeyWord(statement, game.lower()) >= 0):
+            if (self.findKeyWord(statement, game.lower()) >= 0 or self.findKeyWord(statement, "it") >= 0):
+                if (self.topic != ""):
+                    if (self.findKeyWord(statement, game.lower()) >= 0):
+                        self.topic = game
+                    game = self.topic
+                elif (self.findKeyWord(statement, "it") >= 0):
+                    databasecheck = raw_input("What are you talking about? \n")
+                    for gamecheck in database:
+                        if (self.findKeyWord(databasecheck, gamecheck) >= 0):
+                            self.topic = gamecheck
+                            return "Oh, " + gamecheck + "? \nIt" + database[gamecheck]["what"]["DESCRIPTION"]
+
                 for question in database[game]:
-                    if (self.findKeyWord(statement, question) >= 0):
+                    if (self.findKeyWord(statement, question.lower()) >= 0):
                         for phrase in database[game][question]:
                             if (self.findKeyWord(statement, phrase) >= 0):
                                 response = game + database[game][question][phrase]
+                                break
                         else:
                             if (question == "what" and self.findKeyWord(response, game) < 0):
                                 response = game + database[game]["what"]["DESCRIPTION"]
+                                break
                 else:
-                    if (self.findKeyWord(response, game) < 0):
-                        response = game + database[game]["what"]["DESCRIPTION"]
+                    if (statement == game.lower()):
+                        response = "Oh, " + game + "? \n It" + database[game]["what"]["DESCRIPTION"]
                         
         return response
