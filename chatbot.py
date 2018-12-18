@@ -163,11 +163,24 @@ database = {
 database["Mario Odyssey"] = database["Super Mario Odyssey"]
 
 class chatbot:
+    """A program to carry on conversations with a human user.
+    Specialized to give information from the database based on the request from
+    the user.
+    """
     def __init__(self):
+        """Constructor. Initializes variable that remembers discussed topic."""
         self.topic = ""
-    '''
-    '''
     def getGreeting(self):
+        """Generates greeting, recommending what should be asked by listing the
+        games in the database.
+        
+        Lists like this: [game1], [game2], ... 
+        Uses counter to know when last entry has been reached to add last entry
+        with period instead of comma. Because there are some duplicate entries
+        (such as "Mario Odyssey" and "Super Mario Odyssey"), the entries already
+        listed are temporarily saved to compare to incoming entries; duplicates
+        are not added to the list, but will still increment the counter.
+        """
         statement = "Hello, let's talk. \n"
         statement += "I specialize in games. \nAsk me about "
         counter = 0
@@ -186,10 +199,18 @@ class chatbot:
                     statement += game + ", "
                     counter += 1;
         return statement
-    
-    '''
-    '''
     def findKeyWord(self, statement, goal, startPos = 0):
+        """Finds instances of phrase [goal] in [statement] after index
+        [startPos], then returns index of [goal] in [statement] if [goal] has no
+        letters directly before or after it (If the word [goal] is found, not a
+        word with [goal] in it)
+        
+        Keyword arguments:
+        statement -- the string being checked
+        goal -- the string being looked for
+        startPos -- any instances found before index startPos are ignored
+            (default 0)
+        """
         phrase = statement.strip()
         psn = phrase.lower().find(goal.lower(), startPos)
         while(psn >= 0):
@@ -205,10 +226,13 @@ class chatbot:
                 return psn
             psn = phrase.find(goal.lower(), psn + 1)
         return -1
-    
-    '''
-    '''
     def transformIWantToStatement(self, statement):
+        """Take a statement with "I want to <something>." and transform it into
+        "What would it mean to <something>?"
+        
+        Keyword arguments:
+        statement -- the user statement, assumed to contain "I want to"
+        """
         statement = statement.strip()
         lastChar = statement[len(statement) - 1]
         if (lastChar == "."):
@@ -216,10 +240,13 @@ class chatbot:
         psn = self.findKeyWord(statement, "I want to", 0)
         restOfStatement = "What would it mean to " + statement[psn + 9:].strip() +"?"
         return restOfStatement
-    
-    '''
-    '''
     def transformYouMeStatement(self, statement):
+        """Take a statement with "you <something> me" and transform it into
+        "What makes you think that I <something> you?"
+        
+        Keyword arguments:
+        statement -- the user statement, assumed to contain "you" followed by "me"
+        """
         statement = statement.strip()
         lastChar = statement[len(statement) - 1]
         if (lastChar == "."):
@@ -229,10 +256,8 @@ class chatbot:
         restOfStatement = "What makes you think I " + \
                           statement[psnOfYou+ 3: psnOfMe].strip() + " you?"
         return restOfStatement
-    
-    '''
-    '''
     def getRandomResponse(self):
+        """Pick a default response to use if nothing else fits."""
         NUMBER_OF_RESPONSES = 15
         r = random.random()
         whichResponse = int(r * NUMBER_OF_RESPONSES)
@@ -263,10 +288,45 @@ class chatbot:
             self.topic = game
             response = game + database[game]["what"]["DESCRIPTION"]
         return response
-    
-    '''
-    '''
+    def databaseCheck(self, statement):
+        """Searches database for keywords to produce appropriate response.
+        Iterates through database to find response dictionary for game asked
+        about, then interates through game dictionary for entry corresponding to
+        second keyword. Then finds response corresponding to the last keyword.
+        
+        Keyword arguments:
+        statement -- user input from getResponse"""
+        for game in database:
+            if (self.findKeyWord(statement, game.lower()) >= 0 or self.findKeyWord(statement, "it") >= 0):
+                if (self.findKeyWord(statement, game.lower()) >= 0):
+                    self.topic = game
+                if (self.topic != ""):
+                    game = self.topic
+                elif (self.findKeyWord(statement, "it") >= 0):
+                    databasecheck = raw_input("What are you talking about? \n")
+                    for gamecheck in database:
+                        if (self.findKeyWord(databasecheck, gamecheck) >= 0):
+                            self.topic = gamecheck
+                            return "Oh, " + gamecheck + "? \nIt" + database[gamecheck]["what"]["DESCRIPTION"]
+
+                for question in database[game]:
+                    if (self.findKeyWord(statement, question.lower()) >= 0):
+                        for phrase in database[game][question]:
+                            if (self.findKeyWord(statement, phrase) >= 0):
+                                return game + database[game][question][phrase]
+                        else:
+                            if (question == "what" and self.findKeyWord(statement, game) < 0):
+                                return game + database[game]["what"]["DESCRIPTION"]
+                else:
+                    if (statement == game.lower()):
+                        return "Oh, " + game + "? \nIt" + database[game]["what"]["DESCRIPTION"]
+        return ""
     def getResponse(self, statement):
+        """Gives a response to a user statement
+        
+        Keyword arguments:
+        statement -- the user statement
+        """
         response = ""
         statement = statement.lower().strip()
         if (self.findKeyWord(statement, "no") >= 0):
@@ -303,31 +363,8 @@ class chatbot:
             else:
                 response = self.getRandomResponse()
                 
-        for game in database:
-            if (self.findKeyWord(statement, game.lower()) >= 0 or self.findKeyWord(statement, "it") >= 0):
-                if (self.findKeyWord(statement, game.lower()) >= 0):
-                    self.topic = game
-                if (self.topic != ""):
-                    game = self.topic
-                elif (self.findKeyWord(statement, "it") >= 0):
-                    databasecheck = raw_input("What are you talking about? \n")
-                    for gamecheck in database:
-                        if (self.findKeyWord(databasecheck, gamecheck) >= 0):
-                            self.topic = gamecheck
-                            return "Oh, " + gamecheck + "? \nIt" + database[gamecheck]["what"]["DESCRIPTION"]
-
-                for question in database[game]:
-                    if (self.findKeyWord(statement, question.lower()) >= 0):
-                        for phrase in database[game][question]:
-                            if (self.findKeyWord(statement, phrase) >= 0):
-                                response = game + database[game][question][phrase]
-                                break
-                        else:
-                            if (question == "what" and self.findKeyWord(response, game) < 0):
-                                response = game + database[game]["what"]["DESCRIPTION"]
-                                break
-                else:
-                    if (statement == game.lower()):
-                        response = "Oh, " + game + "? \nIt" + database[game]["what"]["DESCRIPTION"]
+        phrase = self.databaseCheck(statement)
+        if(phrase != ""):
+            response = phrase
         
         return response
