@@ -233,7 +233,7 @@ class chatbot:
     '''
     '''
     def getRandomResponse(self):
-        NUMBER_OF_RESPONSES = 10
+        NUMBER_OF_RESPONSES = 15
         r = random.random()
         whichResponse = int(r * NUMBER_OF_RESPONSES)
         response = ""
@@ -257,6 +257,11 @@ class chatbot:
             response = "I don't understand"
         elif (whichResponse == 9):
             response = "You're ruining the illusion of me being an actual person."
+        
+        if (whichResponse >= 10):
+            game = random.choice(list(database))
+            self.topic = game
+            response = game + database[game]["what"]["DESCRIPTION"]
         return response
     
     '''
@@ -300,9 +305,9 @@ class chatbot:
                 
         for game in database:
             if (self.findKeyWord(statement, game.lower()) >= 0 or self.findKeyWord(statement, "it") >= 0):
+                if (self.findKeyWord(statement, game.lower()) >= 0):
+                    self.topic = game
                 if (self.topic != ""):
-                    if (self.findKeyWord(statement, game.lower()) >= 0):
-                        self.topic = game
                     game = self.topic
                 elif (self.findKeyWord(statement, "it") >= 0):
                     databasecheck = raw_input("What are you talking about? \n")
@@ -323,6 +328,6 @@ class chatbot:
                                 break
                 else:
                     if (statement == game.lower()):
-                        response = "Oh, " + game + "? \n It" + database[game]["what"]["DESCRIPTION"]
-                        
+                        response = "Oh, " + game + "? \nIt" + database[game]["what"]["DESCRIPTION"]
+        
         return response
