@@ -27,9 +27,9 @@ For instance:
 | Keyword A2 | Keyword B1 | Keyword C1 | Response 7| 
 |            |            | Keyword C2 | Response 8|
 |            |            | Keyword C3 | Response 9|
-|            | Keyword B2 | Keyword C1 | Response 10|
-|            |            | Keyword C2 | Response 11|
-|            |            | Keyword C3 | Response 12|
+|            | Keyword B3 | Keyword C1 | Response 10|
+|            |            | Keyword C4 | Response 11|
+|            |            | Keyword C5 | Response 12|
 
 The columns represent the elements within a dictionary (For example, Set B represents the elements within a dictionary assigned 
 to a keyword to Set A, and each keyword in Set B is assigned to another dictionary filled with elements assigned to keywords 
