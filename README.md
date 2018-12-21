@@ -36,7 +36,7 @@ to a keyword to Set A, and each keyword in Set B is assigned to another dictiona
 from Set C)
 
 If an input included Keywords A2, B1, and C3, the chatbot would look for keywords from Set A, until it finds A2. Then it would 
-check the input statement for words from the dictionary assigned to key A2, until it finds B1. It would repeat with B2's 
+check the input statement for words from the dictionary assigned to key A2, until it finds B1. It would repeat with 12's 
 dictionary, and once it finds C3, it would return the corresponding response, number 9.
 
 The reason this chatbot was made in python was to be able to use the dictionary, so that the responses could be organized based on what keywords were being looked for. 
